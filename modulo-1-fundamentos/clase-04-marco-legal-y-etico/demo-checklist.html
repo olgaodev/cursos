@@ -1,0 +1,80 @@
+<title>Checklist de Uso Seguro de IA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Paleta de olgadev.com (medida en la web el 12-sep-2026): fondo casi negro, violeta de los botones, blanco en titulares, etiquetas en monoespaciada mayúscula. Un solo tema, como la web. */
+:root{--bg:#0b0a12;--surface:#15131f;--ink:#ffffff;--ink-2:#c9c6d6;--muted:#8d8a9e;--line:#2a2738;--accent:#8b5cf6;--accent-deep:#7c3aed;--accent-soft:#221b3a;--ok:#25d366;--ok-soft:#10261a;--warn:#f5b73f;--warn-soft:#2c2412;--bad:#f87171;--bad-soft:#31191b;--ada:#a78bfa;--ada-soft:#1a1630}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:17px;line-height:1.5;margin:0;min-height:100vh;display:flex;flex-direction:column;background-image:radial-gradient(circle at 20% 0%,rgba(139,92,246,.14),transparent 45%)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;max-width:900px;width:100%;margin:0 auto}
+.demo{font-family:"JetBrains Mono",monospace;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);border:1px solid rgba(245,183,63,.35);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.prog{flex:1;height:6px;background:var(--line);border-radius:999px;overflow:hidden;max-width:360px}.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cnt{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stage{flex:1;display:flex;align-items:safe center;justify-content:center;padding:20px 20px 40px}
+.step{display:none;width:100%;max-width:720px;animation:in .35s ease}.step.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.step{animation:none}.prog i{transition:none}}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:12px;display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.q{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(1.5rem,3.6vw,2.2rem);line-height:1.15;margin:0 0 10px;text-wrap:balance;letter-spacing:-.01em}.q em{font-style:normal;color:var(--accent)}
+.help{color:var(--ink-2);margin:0 0 22px;max-width:60ch}
+.opts{display:grid;gap:10px}.opt{display:flex;align-items:center;gap:12px;text-align:left;font:inherit;font-size:1.05rem;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);cursor:pointer}
+.opt:hover,.opt:focus-visible{border-color:var(--accent);outline:none}.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .k{font-family:"JetBrains Mono",monospace;font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);min-width:26px;text-align:center}
+.fix{display:none;margin-top:14px;font-size:.95rem;color:var(--ink-2);background:var(--warn-soft);border-left:3px solid var(--warn);padding:10px 12px;border-radius:0 10px 10px 0}.fix.show{display:block}
+input.txt{width:100%;font:inherit;font-size:1.15rem;padding:12px 4px;border:0;border-bottom:2px solid var(--line);background:transparent;color:var(--ink);margin-bottom:16px}input.txt:focus{outline:none;border-color:var(--accent)}
+.nav{display:flex;gap:10px;align-items:center;margin-top:22px}
+button.btn{font-family:"JetBrains Mono",monospace;font-size:.9rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:10px;padding:13px 20px;cursor:pointer;background:var(--accent-deep);color:#fff}button.btn:hover{background:var(--accent)}button.btn:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+button.btn.sec,button.btn.sec:hover{background:transparent;color:var(--accent);border:1px dashed var(--accent)}button.btn.sec:hover{background:var(--accent-soft)}.enter{font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted)}
+.res{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:760px){.res{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}.card h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.1rem;margin:0 0 8px}
+.score{font-family:"Bricolage Grotesque",sans-serif;font-size:2.6rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;color:var(--accent)}
+.bar{height:10px;background:var(--line);border-radius:999px;overflow:hidden;margin:10px 0 6px}.bar i{display:block;height:100%;background:var(--ok)}
+.ver{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:500}.v-ok{background:var(--ok-soft);color:var(--ok)}.v-warn{background:var(--warn-soft);color:var(--warn)}.v-bad{background:var(--bad-soft);color:var(--bad)}
+.tag{font-size:.78rem;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.bad{background:var(--bad-soft);color:var(--bad)}.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.lista{margin:0;padding:0;list-style:none}.lista li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:.95rem}.lista li:first-child{border-top:0}
+.mail{border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.95rem}.mail .hdr{font-size:.82rem;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}.mail ul{margin:6px 0;padding-left:1.2em}
+.ada{border-color:var(--ada);background:var(--ada-soft)}.ada h2{color:var(--ada)}.log{font-family:"JetBrains Mono",monospace;font-size:.8rem;line-height:1.55;margin:0;padding:0;list-style:none}.log li{padding:4px 0;border-top:1px dashed var(--line)}.log li:first-child{border-top:0}.log .k{color:var(--ada);font-weight:600}
+</style>
+<div class="top"><span class="demo">Modo demo · nada se envía</span><div class="prog"><i id="prog"></i></div><span class="cnt" id="cnt">1 / 12</span></div>
+<div class="stage" id="stage">
+<section class="step on" data-t="intro"><div class="eyebrow">Módulo 1 · Clase 4 · Marco legal y ético</div><h1 class="q">Hola, Angie. ¿Qué puedes dejar en manos de la IA <em>al 100 %</em>, y dónde debes mantener el control?</h1><p class="help">Primero, seis preguntas sobre tu protocolo de uso seguro. Después, cinco tareas de tu negocio para clasificarlas por riesgo. Al final ves tu evaluación, la recibes por correo y ves lo que Ada ha hecho con tus datos.</p><div class="nav"><button class="btn" data-next>Empezar</button><span class="enter">Enter ↵</span></div></section>
+</div>
+<script>
+(function(){
+var prot=[
+ ['Privacidad en las herramientas','¿Has desactivado el entrenamiento con tus datos en ChatGPT, Claude y Gemini?','En ChatGPT: Configuración → Controles de datos → apaga «Mejorar el modelo para todos». En Claude y Gemini, cuenta de trabajo con privacidad comercial.'],
+ ['Privacidad en las herramientas','¿Trabajas con cuentas de trabajo y verificación en dos pasos?','Activa el segundo factor con una app de autenticación, no por SMS. Cinco minutos que evitan un disgusto.'],
+ ['Anonimización','¿Evitas meter en un prompt DNI, nombres completos, datos bancarios o historiales?','Sustituye por variables: «Cliente Alfa», «Monto X». La IA trabaja igual de bien y tú duermes tranquila.'],
+ ['Anonimización','Antes de analizar un documento de un cliente, ¿lo anonimizas?','Haz una copia, cambia nombres y cifras exactas, y usa esa copia. El original no sale de tu carpeta.'],
+ ['Supervisión humana obligatoria','¿Ningún entregable legal, comercial o financiero sale sin tu revisión y aprobación?','La IA redacta el borrador; tú verificas precios, cláusulas y condiciones antes de «Enviar». Siempre.'],
+ ['Supervisión humana obligatoria','¿Todo texto pasa por tus 5 filtros de calidad sénior?','Datos comprobados, tono propio, sin clichés robóticos, sin sesgos, con criterio de negocio. Los de la Clase 3.']];
+var areas=[['op','Operativo: formatear, transcribir, traducir, clasificar, ideas','ok','Delegable al 100 %'],['pub','Publicaciones o propuestas a clientes','warn','Borrador con IA, aprobación tuya'],['queja','Quejas o crisis con clientes','warn','Responde una persona'],['rrhh','Empleo, reclutamiento, RRHH','bad','Alto riesgo · control humano'],['fin','Crédito, solvencia, seguros','bad','Alto riesgo · control humano'],['edu','Educación y evaluación de personas','bad','Alto riesgo · control humano'],['salud','Salud, diagnóstico, triaje','bad','Alto riesgo · control humano']];
+var ej=['Transcribir mis notas de voz','Enviar presupuestos a clientes','Filtrar currículums','Responder a un cliente enfadado','Maquetar presentaciones'];
+var KEY='demo-clase4-v2';var st={p:[],a:[],t:[]};try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)st=s}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+var stage=document.getElementById('stage');var steps=[];
+prot.forEach(function(p,i){var el=document.createElement('section');el.className='step';el.innerHTML='<div class="eyebrow">Protocolo · '+p[0]+'</div><h2 class="q">'+p[1]+'</h2><div class="opts"><button class="opt" data-v="1"><span class="k">1</span>Sí, lo tengo hecho</button><button class="opt" data-v="0"><span class="k">2</span>Todavía no</button></div><div class="fix">'+p[2]+'</div><div class="nav"><button class="btn sec" data-prev>Atrás</button><button class="btn" data-next>Siguiente</button><span class="enter">Enter ↵</span></div>';
+ var opts=el.querySelectorAll('.opt');opts.forEach(function(o){o.addEventListener('click',function(){st.p[i]=+o.dataset.v;save();paint();if(st.p[i]===1)setTimeout(go,220,1);});});
+ el.paint=function(){opts.forEach(function(o){o.classList.toggle('sel',st.p[i]===+o.dataset.v)});el.querySelector('.fix').classList.toggle('show',st.p[i]===0)};stage.appendChild(el);steps.push(el);});
+for(var j=0;j<5;j++)(function(j){var el=document.createElement('section');el.className='step';var sel='';areas.forEach(function(a){sel+='<button class="opt" data-v="'+a[0]+'"><span class="k">'+(areas.indexOf(a)+1)+'</span>'+a[1]+'</button>'});
+ el.innerHTML='<div class="eyebrow">Tus procesos · '+(j+1)+' de 5</div><h2 class="q">Una tarea de tu negocio que te gustaría delegar</h2><input class="txt" placeholder="'+ej[j]+'" aria-label="Tarea"><p class="help">¿De qué área es? La evaluación aplica las cuatro áreas de alto riesgo del Reglamento europeo de IA.</p><div class="opts">'+sel+'</div><div class="nav"><button class="btn sec" data-prev>Atrás</button><button class="btn" data-next>Siguiente</button><span class="enter">Enter ↵</span></div>';
+ var inp=el.querySelector('.txt');inp.value=st.t[j]||'';inp.addEventListener('input',function(){st.t[j]=inp.value;save()});
+ var opts=el.querySelectorAll('.opt');opts.forEach(function(o){o.addEventListener('click',function(){st.a[j]=o.dataset.v;save();paint();setTimeout(go,220,1)})});
+ el.paint=function(){opts.forEach(function(o){o.classList.toggle('sel',st.a[j]===o.dataset.v)})};el.onshow=function(){inp.focus()};stage.appendChild(el);steps.push(el);})(j);
+var fin=document.createElement('section');fin.className='step';fin.innerHTML='<div class="eyebrow">Tu evaluación</div><div class="res" id="res"></div><div class="nav"><button class="btn sec" data-prev>Atrás</button><button class="btn" id="reset">Empezar de nuevo</button></div>';stage.appendChild(fin);steps.push(fin);
+var all=[steps[0-0]];all=[].slice.call(document.querySelectorAll('.step'));var cur=0;
+function paint(){all.forEach(function(s){if(s.paint)s.paint()})}
+function show(n){cur=Math.max(0,Math.min(all.length-1,n));all.forEach(function(s,i){s.classList.toggle('on',i===cur)});document.getElementById('prog').style.width=(cur/(all.length-1)*100)+'%';document.getElementById('cnt').textContent=(cur+1)+' / '+all.length;if(all[cur].onshow)all[cur].onshow();if(cur===all.length-1)resultado();}
+function go(d){show(cur+d)}
+document.addEventListener('click',function(e){if(e.target.closest('[data-next]'))go(1);if(e.target.closest('[data-prev]'))go(-1);});
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&cur<all.length-1){e.preventDefault();go(1)}var o=all[cur].querySelectorAll('.opt');if(o.length&&/^[1-7]$/.test(e.key)&&document.activeElement.tagName!=='INPUT'){var b=o[+e.key-1];if(b)b.click()}});
+function resultado(){var n=st.p.filter(function(v){return v===1}).length;var pct=Math.round(n/6*100);var falt=prot.filter(function(p,i){return st.p[i]!==1}).map(function(p){return p[1]});
+ var procs=ej.map(function(e,j){var a=areas.filter(function(x){return x[0]===(st.a[j]||'op')})[0];return {t:st.t[j]||e,c:a[2],l:a[3]}});var alto=procs.filter(function(r){return r.c==='bad'}).length;
+ var v=n===6?['v-ok','Protocolo completo: puedes entregar este documento firmado a tus clientes.']:n>=3?['v-warn','Vas por la mitad: cierra primero la supervisión humana, es la que te protege legalmente.']:['v-bad','Aún sin protocolo: empieza por la privacidad de las herramientas.'];
+ var h='<div class="card"><h2>Protocolo de uso seguro</h2><div class="score">'+pct+' %</div><div class="bar"><i style="width:'+pct+'%"></i></div><div style="color:var(--muted);font-size:.9rem">'+n+' de 6 puntos</div><div class="ver '+v[0]+'">'+v[1]+'</div></div>';
+ h+='<div class="card"><h2>Tus procesos</h2><ul class="lista">'+procs.map(function(r){return '<li><span>'+r.t+'</span><span class="tag '+r.c+'">'+r.l+'</span></li>'}).join('')+'</ul></div>';
+ h+='<div class="card"><h2>Lo que te llega por correo</h2><div class="mail"><div class="hdr">De: Ada · cursos@olgadev.com · Asunto: Tu resultado de la Clase 4</div><p>Hola, Angie. Esto es lo que has evaluado hoy:</p><p><strong>Protocolo de uso seguro: '+pct+' %.</strong>'+(falt.length?' Te faltan '+falt.length+' puntos:</p><ul>'+falt.map(function(f){return '<li>'+f+'</li>'}).join('')+'</ul>':' Completo.</p>')+'<p>'+(alto?'Tienes '+alto+' proceso'+(alto>1?'s':'')+' de alto riesgo: ahí tu propuesta es un sistema supervisado por tu criterio, nunca un robot que decide.':'Ninguno de tus procesos es de alto riesgo: puedes ganar tiempo con tranquilidad.')+'</p><p>Un abrazo,<br>Ada &amp; Olga</p></div></div>';
+ h+='<div class="card ada"><h2>Así lo hace Ada</h2><ul class="log"><li><span class="k">registro</span> Ada recibió «he visto la clase 4» → curso identificado.</li><li><span class="k">datos</span> nombre y correo guardados en tu servidor. No viajan a la IA.</li><li><span class="k">consentimiento</span> material: sí · promoción: no → «no te preocupes».</li><li><span class="k">correo</span> enlace a esta app + PDF enviado en 4 s.</li><li><span class="k">resultado</span> evaluación calculada en tu navegador y enviada por correo (demo: se muestra aquí).</li><li><span class="k">torre</span> anotado en la Torre: Clase 4 completada, prioridad media.</li></ul></div>';
+ document.getElementById('res').innerHTML=h;}
+document.getElementById('reset').addEventListener('click',function(){st={p:[],a:[],t:[]};save();all.forEach(function(s){var i=s.querySelector('.txt');if(i)i.value=''});paint();show(0)});
+paint();show(0);
+})();
+</script>

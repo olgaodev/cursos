@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clase 1 · Nuevo mapa de la IA — OlgaDev</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<meta name="description" content="Actividad de la Clase 1 del curso de IA para emprendedores y autónomos: las tres tareas que hoy haces a mano y podrías delegar.">
+<!--
+  App de la Clase 1 (tipo 5 del mapa: plantilla rellenable) — F3-piloto.
+  Autocontenida a propósito: cero CDN, cero dependencias.
+
+  FUENTES: la CSP del sitio (nginx-default.conf) es `font-src 'self'` y
+  `style-src 'self' 'unsafe-inline'`, así que Google Fonts está BLOQUEADO aquí.
+  Se usa la Bricolage Grotesque que el sitio ya sirve desde /assets/fonts/ y,
+  para las etiquetas monoespaciadas, la misma pila de sistema que usan index.html
+  y 404.html (--mono). El aspecto es el de la demo validada por Angie
+  (docs/cursos/demo-checklist-clase4.html), sin pedirle nada a un tercero.
+
+  REGLAS DE CÁLCULO: son las mismas, número por número, que las del flujo n8n
+  «Cursos · App» (parches/crear-flujo-cursos-app.py, bloque JS_REGLAS) y las de
+  la matriz de Excel/Sheets. Aquí se calculan solo para enseñar el resultado al
+  instante; el resultado que vale, el que se guarda y se envía por correo, lo
+  calcula el servidor. Si cambian en un sitio, cambian en los tres.
+-->
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:200 800;font-stretch:100%;font-display:swap;src:url(./assets/fonts/bricolage-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:200 800;font-stretch:100%;font-display:swap;src:url(./assets/fonts/bricolage-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* Paleta de olgadev.com: fondo casi negro, violeta, titulares en blanco,
+   etiquetas en monoespaciada mayúscula. Un solo tema, como la web. */
+:root{
+  --bg:#0b0a12;--surface:#15131f;--ink:#fff;--ink-2:#c9c6d6;--muted:#8d8a9e;
+  --line:#2a2738;--accent:#8b5cf6;--accent-deep:#7c3aed;--accent-soft:#221b3a;
+  --ok:#25d366;--ok-soft:#10261a;--warn:#f5b73f;--warn-soft:#2c2412;
+  --bad:#f87171;--bad-soft:#31191b;--ada:#a78bfa;--ada-soft:#1a1630;
+  --sans:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,'SFMono-Regular','Cascadia Code','Segoe UI Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.5;
+  min-height:100vh;display:flex;flex-direction:column;
+  background-image:radial-gradient(circle at 20% 0%,rgba(139,92,246,.14),transparent 45%);background-attachment:fixed}
+
+.top{display:flex;align-items:center;gap:12px;padding:14px 20px;max-width:900px;width:100%;margin:0 auto}
+.marca{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;white-space:nowrap}
+.marca:hover{color:var(--accent)}
+.demo{font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--warn);background:var(--warn-soft);border:1px solid rgba(245,183,63,.35);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.prog{flex:1;height:6px;background:var(--line);border-radius:999px;overflow:hidden;max-width:360px}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.cnt{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.guardado{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .3s}
+.guardado.on{opacity:1}.guardado.mal{color:var(--warn)}
+
+.stage{flex:1;display:flex;align-items:safe center;justify-content:center;padding:20px 20px 48px}
+.step{display:none;width:100%;max-width:760px;animation:in .35s ease}
+.step.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.step{animation:none}.prog i{transition:none}}
+
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
+  font-weight:500;margin-bottom:12px;display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.q{font-family:var(--sans);font-weight:800;font-size:clamp(1.5rem,3.6vw,2.2rem);line-height:1.15;margin:0 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.q em{font-style:normal;color:var(--accent)}
+.help{color:var(--ink-2);margin:0 0 22px;max-width:62ch}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;font:inherit;font-size:1.05rem;padding:14px 16px;
+  border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);cursor:pointer;width:100%}
+.opt:hover,.opt:focus-visible{border-color:var(--accent);outline:none}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .k{font-family:var(--mono);font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);min-width:26px;text-align:center}
+input.txt{width:100%;font:inherit;font-size:1.15rem;padding:12px 4px;border:0;border-bottom:2px solid var(--line);background:transparent;color:var(--ink);margin-bottom:8px}
+input.txt:focus{outline:none;border-color:var(--accent)}
+input.txt::placeholder{color:var(--muted)}
+.aviso{font-size:.9rem;color:var(--warn);min-height:1.3em;margin:0 0 10px}
+.nav{display:flex;gap:10px;align-items:center;margin-top:22px;flex-wrap:wrap}
+button.btn{font-family:var(--mono);font-size:.9rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  border:0;border-radius:10px;padding:13px 20px;cursor:pointer;background:var(--accent-deep);color:#fff}
+button.btn:hover{background:var(--accent)}
+button.btn:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+button.btn[disabled]{opacity:.5;cursor:progress}
+button.btn.sec,a.btn.sec{background:transparent;color:var(--accent);border:1px dashed var(--accent)}
+button.btn.sec:hover,a.btn.sec:hover{background:var(--accent-soft)}
+a.btn{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:.9rem;font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;border-radius:10px;padding:13px 20px;background:var(--accent-deep);color:#fff}
+a.btn:hover{background:var(--accent)}
+.enter{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+.res{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:820px){.res{grid-template-columns:1fr 1fr}.res .ancho{grid-column:1/-1}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h2{font-family:var(--sans);font-weight:700;font-size:1.1rem;margin:0 0 10px}
+.score{font-family:var(--sans);font-size:2.8rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;color:var(--accent)}
+.score small{font-size:1rem;font-weight:500;color:var(--muted)}
+.sub{color:var(--muted);font-size:.9rem;margin-top:6px}
+.ver{margin-top:12px;padding:10px 12px;border-radius:10px;font-weight:500}
+.v-verde{background:var(--ok-soft);color:var(--ok)}
+.v-amarillo{background:var(--warn-soft);color:var(--warn)}
+.v-rojo{background:var(--bad-soft);color:var(--bad)}
+.tag{font-size:.78rem;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.tag.verde{background:var(--ok-soft);color:var(--ok)}
+.tag.amarillo{background:var(--warn-soft);color:var(--warn)}
+.tag.rojo{background:var(--bad-soft);color:var(--bad)}
+.lista{margin:0;padding:0;list-style:none}
+.lista li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:.95rem}
+.lista li:first-child{border-top:0}
+.lista .nom{display:block}
+.lista .met{display:block;color:var(--muted);font-size:.82rem;font-family:var(--mono);margin-top:2px}
+.paso{font-size:1.02rem;color:var(--ink-2)}
+.nota{font-size:.85rem;color:var(--muted);margin-top:10px}
+
+.ada{border-color:var(--ada);background:var(--ada-soft)}
+.ada h2{color:var(--ada)}
+.ada summary{cursor:pointer;font-family:var(--sans);font-weight:700;font-size:1.1rem;color:var(--ada);list-style:none}
+.ada summary::-webkit-details-marker{display:none}
+.ada summary::before{content:'▸ ';font-family:var(--mono)}
+.ada[open] summary::before{content:'▾ '}
+.log{font-family:var(--mono);font-size:.8rem;line-height:1.55;margin:10px 0 0;padding:0;list-style:none}
+.log li{padding:6px 0;border-top:1px dashed var(--line);display:flex;gap:8px;align-items:flex-start}
+.log li:first-child{border-top:0}
+.log .k{color:var(--ada);font-weight:600;min-width:82px;flex-shrink:0}
+.log .v{color:var(--ink-2)}
+.log .bien{color:var(--ok)}.log .mal{color:var(--bad)}.log .esp{color:var(--muted)}
+
+.pantalla-carga,.pantalla-error{max-width:620px;margin:auto;text-align:center;padding:40px 20px}
+.pantalla-error .q{color:var(--ink)}
+
+/* --- Impresión: solo el resultado, en papel legible ------------------- */
+@media print{
+  @page{margin:16mm}
+  body{background:#fff!important;color:#111;display:block;font-size:11.5pt;background-image:none!important}
+  .top,.nav,.ada,.no-print{display:none!important}
+  .stage{display:block;padding:0}
+  .step{display:none!important}
+  .step#fin{display:block!important;max-width:none;animation:none}
+  .eyebrow{color:#7c3aed;border-color:#ccc}
+  .q{color:#111}
+  .res{display:block}
+  .card{background:#fff;border:1px solid #d9d6e3;break-inside:avoid;page-break-inside:avoid;margin-bottom:12px;padding:12px 14px}
+  .card h2{color:#111}
+  .score{color:#7c3aed}
+  .sub,.nota,.lista .met{color:#555}
+  .lista li{border-color:#e5e5e5}
+  .paso{color:#222}
+  .tag.verde,.v-verde{background:#d7f0dc;color:#1a7f37}
+  .tag.amarillo,.v-amarillo{background:#fdf0ce;color:#9a6700}
+  .tag.rojo,.v-rojo{background:#fbdcd8;color:#b42318}
+  .pie-print{display:block!important;margin-top:14px;font-size:9.5pt;color:#666}
+}
+.pie-print{display:none}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="marca" href="https://olgadev.com/">OlgaDev</a>
+  <span class="demo" id="etiqueta-demo" hidden>Modo demo · nada se envía</span>
+  <div class="prog"><i id="prog"></i></div>
+  <span class="cnt" id="cnt">—</span>
+  <span class="guardado" id="guardado">Guardado</span>
+</div>
+
+<div class="stage" id="stage">
+  <div class="pantalla-carga" id="cargando">
+    <p class="eyebrow">Módulo 1 · Clase 1</p>
+    <h1 class="q">Abriendo tu actividad…</h1>
+    <p class="help" style="margin:0 auto">Un segundo, estamos comprobando tu enlace.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+// ---------------------------------------------------------------------------
+// Configuración
+// ---------------------------------------------------------------------------
+var API = 'https://n8n.eaglemarketing.tech/webhook/cursos-app-';
+
+// Enlace «hacer una copia» de la matriz en Google Sheets. Lo pega Angie cuando
+// suba la plantilla a su Drive (paso a paso en docs/cursos/f3-piloto-m1c1.md).
+// Mientras siga el marcador, la app ofrece el XLSX descargable en su lugar.
+var SHEET_COPY_URL = 'PENDIENTE_ANGIE';
+var XLSX_URL = 'm1c1-diagnostico-tareas.xlsx';
+
+var CURSO = 'm1c1';
+var TITULO = 'Nuevo mapa de la IA';
+
+// ---------------------------------------------------------------------------
+// Reglas del diagnóstico — copia exacta de las del servidor.
+// (parches/crear-flujo-cursos-app.py → JS_REGLAS, y hoja «Reglas» del XLSX)
+// ---------------------------------------------------------------------------
+var HORAS = { menos1: 0.5, '1a3': 2, '3a6': 4.5, mas6: 8 };
+var FACTOR = { asistente: 0.5, automatizacion: 0.85, agente: 0.7 };
+var ETIQUETA = { asistente: 'Asistente', automatizacion: 'Automatización', agente: 'Agente' };
+
+function trinidad(freno, horas) {
+  if (freno === 'repetitiva') return 'automatizacion';
+  if (freno === 'varios_pasos') return 'agente';
+  if (freno === 'criterio') return 'asistente';
+  if (freno === 'tiempo') return horas >= 3 ? 'automatizacion' : 'asistente';
+  return 'asistente';
+}
+function color(h) {
+  if (h >= 4) return ['rojo', 'Fuga grande'];
+  if (h >= 1.5) return ['amarillo', 'Fuga media'];
+  return ['verde', 'Fuga pequeña'];
+}
+function colorTotal(h) {
+  if (h >= 6) return ['rojo', 'Fuga grande'];
+  if (h >= 2.5) return ['amarillo', 'Fuga media'];
+  return ['verde', 'Fuga pequeña'];
+}
+function pasoSiguiente(t) {
+  if (t.tipo === 'automatizacion') {
+    return '«' + t.tarea + '» es siempre igual: no necesita criterio, necesita un flujo. ' +
+      'Apunta el disparador (qué la pone en marcha) y los pasos exactos, en orden. ' +
+      'Con eso ya se puede automatizar sin escribir una línea de código.';
+  }
+  if (t.tipo === 'agente') {
+    return '«' + t.tarea + '» toca varias herramientas y hay que decidir sobre la marcha: ' +
+      'eso es trabajo de agente, y un agente siempre lleva supervisión humana. ' +
+      'Empieza escribiendo qué puede decidir solo y qué tiene que consultarte antes.';
+  }
+  return 'Abre un chat con tu asistente de IA y pídele que haga «' + t.tarea + '» una sola vez, ' +
+    'contigo delante, corrigiéndole. Guarda el prompt que funcionó: ese es tu primer activo.';
+}
+function calcular(respuestas) {
+  var tareas = [];
+  var lista = (respuestas && respuestas.tareas) || [];
+  for (var i = 0; i < Math.min(3, lista.length); i++) {
+    var r = lista[i] || {};
+    var tarea = String(r.tarea == null ? '' : r.tarea)
+      .replace(/[\r\n\t]+/g, ' ').replace(/[<>&"']/g, '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    if (!tarea) continue;
+    var horas = HORAS[r.horas] === undefined ? 0.5 : HORAS[r.horas];
+    var tipo = trinidad(r.freno, horas);
+    var rec = Math.round(horas * FACTOR[tipo] * 10) / 10;
+    var c = color(rec);
+    tareas.push({ tarea: tarea, horas: horas, tipo: tipo, tipo_etiqueta: ETIQUETA[tipo],
+      recuperables: rec, color: c[0], valoracion: c[1] });
+  }
+  var total = Math.round(tareas.reduce(function (s, t) { return s + t.recuperables; }, 0) * 10) / 10;
+  var horas_hoy = Math.round(tareas.reduce(function (s, t) { return s + t.horas; }, 0) * 10) / 10;
+  var orden = tareas.slice().sort(function (a, b) { return b.recuperables - a.recuperables; });
+  var ct = colorTotal(total);
+  return {
+    tareas: tareas, horas_hoy: horas_hoy, horas_recuperables: total,
+    horas_mes: Math.round(total * 4.3 * 2) / 2,
+    color_total: ct[0], valoracion_total: ct[1],
+    reparto: {
+      asistente: tareas.filter(function (t) { return t.tipo === 'asistente'; }).length,
+      automatizacion: tareas.filter(function (t) { return t.tipo === 'automatizacion'; }).length,
+      agente: tareas.filter(function (t) { return t.tipo === 'agente'; }).length
+    },
+    siguiente_paso: orden[0] ? pasoSiguiente(orden[0]) : '',
+    siguiente_tarea: orden[0] ? orden[0].tarea : ''
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function num(n) { return String(n).replace('.', ','); }
+function el(tag, cls, html) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+
+// ---------------------------------------------------------------------------
+// Panel «Así lo hace Ada» — se alimenta de las llamadas REALES a la API.
+// Nada de esto es decorativo: cada línea la escribe una respuesta del servidor.
+// ---------------------------------------------------------------------------
+var pasos = [];
+function anotar(clave, texto, estado) {
+  // Si la última línea es la misma (los guardados de progreso se repiten en cada
+  // respuesta), se agrupa con un contador en vez de llenar el panel de ruido.
+  var ult = pasos[pasos.length - 1];
+  if (ult && ult.k === clave && ult.v === texto) { ult.n = (ult.n || 1) + 1; }
+  else { pasos.push({ k: clave, v: texto, e: estado || '', n: 1 }); }
+  pintarPanel();
+}
+function pintarPanel() {
+  var c = document.getElementById('log-ada');
+  if (!c) return;
+  c.innerHTML = pasos.map(function (p) {
+    return '<li><span class="k">' + esc(p.k) + '</span><span class="v ' + p.e + '">' +
+      esc(p.v) + (p.n > 1 ? ' (×' + p.n + ')' : '') + '</span></li>';
+  }).join('');
+}
+
+// ---------------------------------------------------------------------------
+// Estado de la sesión
+// ---------------------------------------------------------------------------
+var partes = location.pathname.replace(/\/+$/, '').split('/');
+var ultimo = partes[partes.length - 1] || '';
+var DEMO = (ultimo === 'demo' || ultimo === 'm1c1' || ultimo === '');
+var TOKEN = DEMO ? '' : ultimo;
+
+var st = { nombre: '', tareas: [{}, {}, {}] };
+var enviado = null;      // resultado devuelto por el servidor
+var enviando = false;
+var avisoTexto = '';     // mensaje bajo los botones; sobrevive al repintado
+
+var FRENOS = [
+  ['criterio', 'Requiere mi criterio o mi estilo'],
+  ['repetitiva', 'Es repetitiva y siempre igual'],
+  ['varios_pasos', 'Toca varias herramientas y hay que decidir sobre la marcha'],
+  ['tiempo', 'No es difícil, es que no tengo tiempo'],
+  ['no_se', 'No sé por dónde empezar']
+];
+var TRAMOS = [
+  ['menos1', 'Menos de 1 hora'],
+  ['1a3', 'Entre 1 y 3 horas'],
+  ['3a6', 'Entre 3 y 6 horas'],
+  ['mas6', 'Más de 6 horas']
+];
+var EJEMPLOS = [
+  'Pasar los tickets a la hoja de gastos',
+  'Escribir presupuestos para clientes nuevos',
+  'Contestar los mensajes que llegan fuera de horario'
+];
+var DEMO_DATOS = [
+  { tarea: 'Pasar los tickets a la hoja de gastos', horas: '3a6', freno: 'repetitiva' },
+  { tarea: 'Escribir presupuestos para clientes nuevos', horas: '1a3', freno: 'criterio' },
+  { tarea: 'Contestar los mensajes que llegan fuera de horario', horas: 'mas6', freno: 'varios_pasos' }
+];
+
+// ---------------------------------------------------------------------------
+// Llamadas a la API
+// ---------------------------------------------------------------------------
+function pedir(op, metodo, cuerpo) {
+  var url = API + op + (metodo === 'GET' ? '?t=' + encodeURIComponent(TOKEN) : '');
+  var opciones = { method: metodo, headers: {} };
+  if (metodo === 'POST') {
+    opciones.headers['Content-Type'] = 'application/json';
+    opciones.body = JSON.stringify(cuerpo);
+  }
+  return fetch(url, opciones).then(function (r) {
+    return r.text().then(function (t) {
+      var j = null;
+      try { j = JSON.parse(t); } catch (e) { j = null; }
+      return { codigo: r.status, datos: j };
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Arranque
+// ---------------------------------------------------------------------------
+function arrancar() {
+  if (DEMO) {
+    document.getElementById('etiqueta-demo').hidden = false;
+    st.nombre = 'Angie';
+    st.tareas = DEMO_DATOS.map(function (d) { return { tarea: d.tarea, horas: d.horas, freno: d.freno }; });
+    anotar('modo demo', 'esta pantalla no llama a la API, no guarda nada y no envía ningún correo', 'esp');
+    montar();
+    return;
+  }
+  pedir('estado', 'GET').then(function (r) {
+    if (r.codigo !== 200 || !r.datos || !r.datos.ok) {
+      pantallaError(r.codigo);
+      return;
+    }
+    st.nombre = r.datos.nombre || '';
+    if (r.datos.progreso && r.datos.progreso.tareas) {
+      for (var i = 0; i < 3; i++) st.tareas[i] = r.datos.progreso.tareas[i] || {};
+    }
+    anotar('estado', 'GET cursos-app-estado → 200. Te ha reconocido por el token: «' +
+      (st.nombre || 'sin nombre') + '», clase ' + CURSO + '. Tu correo NO llega al navegador.', 'bien');
+    if (r.datos.estado === 'en_curso' || r.datos.estado === 'completado') {
+      anotar('progreso', 'ya había respuestas guardadas en el servidor (' + r.datos.estado +
+        '): se han recuperado tal cual, sin depender de este dispositivo.', 'bien');
+    }
+    montar();
+  }).catch(function () { pantallaError(0); });
+}
+
+function pantallaError(codigo) {
+  var stage = document.getElementById('stage');
+  stage.innerHTML =
+    '<div class="pantalla-error">' +
+    '<p class="eyebrow">Módulo 1 · Clase 1</p>' +
+    '<h1 class="q">Este enlace no es válido</h1>' +
+    '<p class="help" style="margin:0 auto 22px">Puede que lo hayas copiado a medias, o que hayan pasado ya los 90 días ' +
+    'que dura el acceso. Escríbele a Ada en olgadev.com y te manda uno nuevo al momento.' +
+    (codigo === 0 ? ' <br><br>(No hemos podido contactar con el servidor.)' : '') + '</p>' +
+    '<a class="btn" href="https://olgadev.com/">Hablar con Ada</a>' +
+    '<p class="nota" style="margin-top:18px">Código: ' + esc(codigo || 'sin respuesta') + '</p>' +
+    '</div>';
+  document.getElementById('cnt').textContent = '';
+}
+
+// ---------------------------------------------------------------------------
+// Pantallas (estilo Typeform: una cosa por pantalla)
+// ---------------------------------------------------------------------------
+var pantallas = [];
+var actual = 0;
+
+function montar() {
+  var stage = document.getElementById('stage');
+  stage.innerHTML = '';
+
+  // -- Intro --
+  var intro = el('section', 'step');
+  intro.innerHTML =
+    '<div class="eyebrow">Módulo 1 · Clase 1 · ' + esc(TITULO) + '</div>' +
+    '<h1 class="q">' + (st.nombre ? 'Hola, ' + esc(st.nombre) + '. ' : '') +
+    '¿Qué tres cosas haces <em>a mano</em> que podrías dejar de hacer?</h1>' +
+    '<p class="help">Nueve preguntas cortas: tres tareas, y de cada una cuánto tiempo te come y qué te frena ' +
+    'para soltarla. Al final ves tu diagnóstico —cuántas horas puedes recuperar y con qué tipo de solución—, ' +
+    'te lo puedes llevar a una hoja de cálculo y recibirlo por correo.</p>' +
+    '<div class="nav"><button class="btn" data-next>Empezar</button><span class="enter">Enter ↵</span></div>';
+  stage.appendChild(intro);
+  pantallas.push(intro);
+
+  // -- Tres tareas x tres preguntas --
+  for (var i = 0; i < 3; i++) (function (i) {
+    // 1) el texto de la tarea
+    var p1 = el('section', 'step');
+    p1.innerHTML =
+      '<div class="eyebrow">Tarea ' + (i + 1) + ' de 3</div>' +
+      '<h2 class="q">' + (i === 0 ? 'Escribe la primera tarea que hoy resuelves a mano'
+        : i === 1 ? 'Y la segunda' : 'La última') + '</h2>' +
+      '<p class="help">Concreta, como se la contarías a alguien que va a hacerla por ti.</p>' +
+      '<input class="txt" maxlength="120" placeholder="' + esc(EJEMPLOS[i]) + '" aria-label="Tarea ' + (i + 1) + '">' +
+      '<p class="aviso" role="status"></p>' +
+      '<div class="nav">' + (i === 0 ? '' : '<button class="btn sec" data-prev>Atrás</button>') +
+      '<button class="btn" data-next>Siguiente</button><span class="enter">Enter ↵</span></div>';
+    var inp = p1.querySelector('.txt');
+    inp.value = st.tareas[i].tarea || '';
+    inp.addEventListener('input', function () { st.tareas[i].tarea = inp.value; p1.querySelector('.aviso').textContent = ''; });
+    inp.addEventListener('change', guardar);
+    // En modo demo el campo viene relleno con el ejemplo, para que la pantalla
+    // final enseñe un diagnóstico completo sin que haya que tocar nada. Pero si
+    // Angie escribe encima (en clase, en directo), lo tecleado se concatenaba al
+    // ejemplo. Se vacía al PRIMER CARÁCTER que escribe o pega, una sola vez y
+    // solo en demo.
+    // Por qué en 'beforeinput' y no en 'focus': la pantalla hace focus() sola al
+    // aparecer, así que borrar en el foco dejaba el demo vacío de entrada y la
+    // pantalla final sin diagnóstico. 'beforeinput' salta justo antes de insertar
+    // el carácter, así que solo se vacía si de verdad se está escribiendo.
+    // En modo real no se engancha nada: ahí el contenido es lo que escribió la
+    // persona y no se toca jamás.
+    if (DEMO) {
+      var estrenado = false;
+      inp.addEventListener('beforeinput', function () {
+        if (estrenado) return;
+        estrenado = true;
+        if (inp.value === DEMO_DATOS[i].tarea) {
+          inp.value = '';
+          st.tareas[i].tarea = '';
+        }
+      });
+    }
+    p1.onshow = function () { setTimeout(function () { inp.focus(); }, 60); };
+    p1.validar = function () {
+      if (!String(st.tareas[i].tarea || '').trim()) {
+        p1.querySelector('.aviso').textContent = 'Escribe la tarea para poder seguir.';
+        inp.focus();
+        return false;
+      }
+      return true;
+    };
+    stage.appendChild(p1); pantallas.push(p1);
+
+    // 2) cuánto tiempo
+    var p2 = el('section', 'step');
+    p2.innerHTML =
+      '<div class="eyebrow">Tarea ' + (i + 1) + ' · tiempo</div>' +
+      '<h2 class="q">¿Cuánto tiempo te lleva <em>a la semana</em>?</h2>' +
+      '<p class="help" data-eco></p>' +
+      '<div class="opts">' + TRAMOS.map(function (t, n) {
+        return '<button class="opt" data-v="' + t[0] + '"><span class="k">' + (n + 1) + '</span>' + esc(t[1]) + '</button>';
+      }).join('') + '</div>' +
+      '<p class="aviso" role="status"></p>' +
+      '<div class="nav"><button class="btn sec" data-prev>Atrás</button>' +
+      '<button class="btn" data-next>Siguiente</button><span class="enter">Enter ↵</span></div>';
+    engancharOpciones(p2, i, 'horas');
+    stage.appendChild(p2); pantallas.push(p2);
+
+    // 3) qué te frena
+    var p3 = el('section', 'step');
+    p3.innerHTML =
+      '<div class="eyebrow">Tarea ' + (i + 1) + ' · el freno</div>' +
+      '<h2 class="q">¿Qué te frena para delegarla?</h2>' +
+      '<p class="help" data-eco></p>' +
+      '<div class="opts">' + FRENOS.map(function (f, n) {
+        return '<button class="opt" data-v="' + f[0] + '"><span class="k">' + (n + 1) + '</span>' + esc(f[1]) + '</button>';
+      }).join('') + '</div>' +
+      '<p class="aviso" role="status"></p>' +
+      '<div class="nav"><button class="btn sec" data-prev>Atrás</button>' +
+      '<button class="btn" data-next>Siguiente</button><span class="enter">Enter ↵</span></div>';
+    engancharOpciones(p3, i, 'freno');
+    stage.appendChild(p3); pantallas.push(p3);
+  })(i);
+
+  // -- Resultado --
+  var fin = el('section', 'step');
+  fin.id = 'fin';
+  fin.innerHTML =
+    '<div class="eyebrow">Tu diagnóstico</div>' +
+    '<h2 class="q" id="fin-titulo">Esto es lo que puedes recuperar</h2>' +
+    '<div class="res" id="res"></div>' +
+    '<div class="nav no-print"><button class="btn sec" data-prev>Atrás</button></div>';
+  stage.appendChild(fin); pantallas.push(fin);
+
+  mostrar(0);
+}
+
+function engancharOpciones(p, i, campo) {
+  var opts = p.querySelectorAll('.opt');
+  Array.prototype.forEach.call(opts, function (o) {
+    o.addEventListener('click', function () {
+      st.tareas[i][campo] = o.dataset.v;
+      pintarSeleccion(p, i, campo);
+      p.querySelector('.aviso').textContent = '';
+      guardar();
+      setTimeout(function () { ir(1); }, 220);
+    });
+  });
+  p.paint = function () { pintarSeleccion(p, i, campo); };
+  p.onshow = function () {
+    var eco = p.querySelector('[data-eco]');
+    if (eco) eco.textContent = '«' + (st.tareas[i].tarea || EJEMPLOS[i]) + '»';
+    pintarSeleccion(p, i, campo);
+  };
+  p.validar = function () {
+    if (!st.tareas[i][campo]) {
+      p.querySelector('.aviso').textContent = 'Elige una de las opciones para seguir.';
+      return false;
+    }
+    return true;
+  };
+}
+function pintarSeleccion(p, i, campo) {
+  Array.prototype.forEach.call(p.querySelectorAll('.opt'), function (o) {
+    o.classList.toggle('sel', st.tareas[i][campo] === o.dataset.v);
+  });
+}
+
+function mostrar(n) {
+  actual = Math.max(0, Math.min(pantallas.length - 1, n));
+  pantallas.forEach(function (p, i) { p.classList.toggle('on', i === actual); });
+  document.getElementById('prog').style.width = (actual / (pantallas.length - 1) * 100) + '%';
+  document.getElementById('cnt').textContent = (actual + 1) + ' / ' + pantallas.length;
+  if (pantallas[actual].onshow) pantallas[actual].onshow();
+  if (actual === pantallas.length - 1) pintarResultado();
+  window.scrollTo(0, 0);
+}
+function ir(d) {
+  if (d > 0 && pantallas[actual].validar && !pantallas[actual].validar()) return;
+  mostrar(actual + d);
+}
+
+document.addEventListener('click', function (e) {
+  if (e.target.closest('[data-next]')) ir(1);
+  if (e.target.closest('[data-prev]')) ir(-1);
+});
+document.addEventListener('keydown', function (e) {
+  var p = pantallas[actual];
+  if (!p) return;
+  if (e.key === 'Enter' && actual < pantallas.length - 1 && !e.target.closest('button')) {
+    e.preventDefault(); ir(1); return;
+  }
+  var opts = p.querySelectorAll ? p.querySelectorAll('.opt') : [];
+  if (opts.length && /^[1-5]$/.test(e.key) && document.activeElement.tagName !== 'INPUT') {
+    var b = opts[+e.key - 1];
+    if (b) b.click();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Guardado del progreso (en el servidor, no en este navegador)
+// ---------------------------------------------------------------------------
+var temporizador = null;
+function guardar() {
+  if (DEMO) return;
+  clearTimeout(temporizador);
+  temporizador = setTimeout(function () {
+    pedir('progreso', 'POST', { t: TOKEN, respuestas: { tareas: st.tareas } }).then(function (r) {
+      var ind = document.getElementById('guardado');
+      if (r.codigo === 200 && r.datos && r.datos.ok) {
+        ind.textContent = 'Guardado';
+        ind.classList.remove('mal');
+        anotar('progreso', 'POST cursos-app-progreso → 200 (' + (r.datos.accion || '') +
+          '). Lo escrito queda en el servidor, no en este navegador: puedes seguir desde el móvil.', 'bien');
+      } else {
+        ind.textContent = 'Sin guardar';
+        ind.classList.add('mal');
+        anotar('progreso', 'POST cursos-app-progreso → ' + r.codigo + '. No se ha podido guardar.', 'mal');
+      }
+      ind.classList.add('on');
+      setTimeout(function () { ind.classList.remove('on'); }, 2200);
+    }).catch(function () {});
+  }, 700);
+}
+
+// ---------------------------------------------------------------------------
+// Pantalla de resultado
+// ---------------------------------------------------------------------------
+function pintarResultado() {
+  var r = (enviado && enviado.resultado) || calcular({ tareas: st.tareas });
+  var c = document.getElementById('res');
+  var completo = r.tareas.length === 3 &&
+    st.tareas.every(function (t) { return t.tarea && t.horas && t.freno; });
+
+  var h = '';
+
+  // 1) el número
+  h += '<div class="card">' +
+    '<h2>Horas que puedes recuperar</h2>' +
+    '<div class="score">' + num(r.horas_recuperables) + ' <small>h/semana</small></div>' +
+    '<div class="sub">De las ' + num(r.horas_hoy) + ' h/semana que te comen hoy. ' +
+    'Al mes son unas ' + num(r.horas_mes) + ' horas.</div>' +
+    '<div class="ver v-' + r.color_total + '">' + esc(r.valoracion_total) + '</div>' +
+    '<p class="nota">Es una estimación con reglas fijas, no una promesa: un asistente te devuelve ' +
+    'la mitad del tiempo de una tarea, una automatización casi todo (85 %), y un agente algo menos ' +
+    '(70 %) porque siempre lo supervisas tú.</p>' +
+    '</div>';
+
+  // 2) las tres tareas
+  h += '<div class="card"><h2>Tus tareas, una a una</h2><ul class="lista">' +
+    (r.tareas.length ? r.tareas.map(function (t) {
+      return '<li><span><span class="nom">' + esc(t.tarea) + '</span>' +
+        '<span class="met">' + num(t.horas) + ' h/sem → ' + esc(t.tipo_etiqueta) +
+        ' · recuperas ' + num(t.recuperables) + ' h</span></span>' +
+        '<span class="tag ' + t.color + '">' + esc(t.valoracion) + '</span></li>';
+    }).join('') : '<li><span class="met">Todavía no has escrito ninguna tarea.</span></li>') +
+    '</ul></div>';
+
+  // 3) por dónde empezar
+  if (r.siguiente_paso) {
+    h += '<div class="card ancho"><h2>Por dónde empezar el lunes</h2>' +
+      '<p class="paso">' + esc(r.siguiente_paso) + '</p>' +
+      '<p class="nota">Reparto de tu lista: ' + r.reparto.asistente + ' asistente · ' +
+      r.reparto.automatizacion + ' automatización · ' + r.reparto.agente + ' agente. ' +
+      'La Trinidad tecnológica es justo la Clase 2.</p></div>';
+  }
+
+  // 4) qué hacer con esto
+  var copia = SHEET_COPY_URL !== 'PENDIENTE_ANGIE'
+    ? '<a class="btn" href="' + esc(SHEET_COPY_URL) + '" target="_blank" rel="noopener">Copiar la matriz en Google Sheets</a>'
+    : '<a class="btn" href="' + esc(XLSX_URL) + '" download>Descargar la matriz (Excel)</a>';
+  h += '<div class="card ancho no-print"><h2>Llévatelo contigo</h2>' +
+    '<p class="help" style="margin-bottom:16px">La matriz trae las mismas reglas y los mismos colores que ves aquí: ' +
+    'verde, amarillo o rojo según las horas que recuperas en cada fila. Añade tareas cuando quieras.</p>' +
+    '<div class="nav" style="margin-top:0">' + copia +
+    '<button class="btn sec" id="btn-imprimir">Guardar en PDF</button>' +
+    (DEMO ? '' : '<button class="btn" id="btn-correo"' + (enviado || !completo ? ' disabled' : '') + '>' +
+      (enviado ? 'Enviado ✓' : 'Enviar mi resultado por correo') + '</button>') +
+    '</div>' +
+    '<p class="aviso" id="aviso-correo" role="status">' + esc(avisoTexto) + '</p>' +
+    (DEMO ? '<p class="nota">Estás en modo demo: aquí no se envía ningún correo ni se guarda nada.</p>'
+      : (completo ? '' : '<p class="nota">Completa las tres tareas para poder enviártelo.</p>')) +
+    '</div>';
+
+  // 5) el panel
+  h += '<details class="card ada ancho" id="panel-ada" open>' +
+    '<summary>Así lo hago yo con IA</summary>' +
+    '<p class="nota" style="margin-top:8px">Lo que acaba de pasar de verdad con tus datos, paso por paso. ' +
+    'Sin adornos: cada línea es la respuesta real del servidor.</p>' +
+    '<ul class="log" id="log-ada"></ul>' +
+    '<p class="nota">Ninguna IA ha visto esto: el diagnóstico son cuatro reglas fijas, ' +
+    'y tu nombre y tu correo no salen del servidor de Olga.</p>' +
+    '</details>';
+
+  h += '<p class="pie-print">OlgaDev.com · Clase 1 · ' + esc(TITULO) +
+    ' — diagnóstico generado el ' + new Date().toLocaleDateString('es-ES') + '.</p>';
+
+  c.innerHTML = h;
+  pintarPanel();
+
+  var ti = document.getElementById('fin-titulo');
+  if (ti) ti.innerHTML = st.nombre ? esc(st.nombre) + ', esto es lo que puedes recuperar' : 'Esto es lo que puedes recuperar';
+
+  var bi = document.getElementById('btn-imprimir');
+  if (bi) bi.addEventListener('click', function () { window.print(); });
+
+  var bc = document.getElementById('btn-correo');
+  if (bc) bc.addEventListener('click', enviarCorreo);
+}
+
+function enviarCorreo() {
+  if (DEMO || enviando) return;
+  enviando = true;
+  var b = document.getElementById('btn-correo');
+  var av = document.getElementById('aviso-correo');
+  b.disabled = true;
+  b.textContent = 'Enviando…';
+  avisoTexto = '';
+  av.textContent = '';
+  pedir('resultado', 'POST', { t: TOKEN, respuestas: { tareas: st.tareas } }).then(function (r) {
+    enviando = false;
+    if (r.codigo === 200 && r.datos && r.datos.ok) {
+      enviado = r.datos;
+      anotar('resultado', 'POST cursos-app-resultado → 200. El servidor ha recalculado el diagnóstico ' +
+        'con sus propias reglas (' + num(r.datos.resultado.horas_recuperables) + ' h/semana) y lo ha guardado.', 'bien');
+      // En un reenvío dentro de los 10 minutos NO se vuelve a llamar a la Torre
+      // (ya está anotada), así que no hay torre_ok que enseñar: se dice eso, no
+      // que «no ha respondido», que sería falso.
+      if (r.datos.reenviado === false) {
+        anotar('torre', 'no se vuelve a anotar: tu Clase 1 ya estaba registrada en la Torre.', 'esp');
+      } else {
+        anotar('torre', r.datos.torre_ok
+          ? 'anotado en la Torre de Control de Olga: «Clase 1 completada», prioridad media. Le suena el aviso.'
+          : 'la Torre no ha respondido; tu resultado está guardado igual y el correo sigue su curso.',
+          r.datos.torre_ok ? 'bien' : 'esp');
+      }
+      if (r.datos.reenviado === false) {
+        anotar('correo', 'no se ha reenviado: ya te lo mandamos hace menos de 10 minutos. Mira tu bandeja.', 'esp');
+        avisoTexto = 'Ya te lo enviamos hace un momento: revisa tu correo (y la carpeta de spam).';
+      } else if (r.datos.correo_enviado) {
+        anotar('correo', 'enviado a tu dirección desde cursos@olgadev.com. El navegador nunca ha visto ese correo: ' +
+          'lo tenía el servidor desde que hablaste con Ada.', 'bien');
+        avisoTexto = 'Enviado. Te llega en un momento a tu correo.';
+      } else {
+        anotar('correo', 'el envío ha fallado; tu resultado sí está guardado y puedes reintentarlo.', 'mal');
+        avisoTexto = 'Tu resultado está guardado, pero el correo no ha salido. Prueba otra vez en un minuto.';
+      }
+      pintarResultado();   // repinta con el resultado del servidor; el botón y
+                           // el aviso se reconstruyen ya en su estado «enviado».
+    } else if (r.codigo === 404) {
+      av.textContent = 'Tu enlace ha caducado. Escríbele a Ada y te manda uno nuevo.';
+      b.disabled = false; b.textContent = 'Enviar mi resultado por correo';
+      anotar('resultado', 'POST cursos-app-resultado → 404: el token ya no vale.', 'mal');
+    } else {
+      av.textContent = 'No hemos podido enviarlo (' + r.codigo + '). Prueba otra vez en un minuto.';
+      b.disabled = false; b.textContent = 'Enviar mi resultado por correo';
+      anotar('resultado', 'POST cursos-app-resultado → ' + r.codigo + '.', 'mal');
+    }
+  }).catch(function () {
+    enviando = false;
+    av.textContent = 'No hemos podido contactar con el servidor. Prueba otra vez en un minuto.';
+    b.disabled = false; b.textContent = 'Enviar mi resultado por correo';
+  });
+}
+
+arrancar();
+})();
+</script>
+</body>
+</html>
