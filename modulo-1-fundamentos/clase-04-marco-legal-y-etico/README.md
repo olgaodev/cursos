@@ -35,3 +35,14 @@ En la versión completa del curso, esta actividad vive en
 ## Licencia
 
 MIT (ver [`../../LICENSE-codigo.md`](../../LICENSE-codigo.md)).
+
+## Pieza real: cómo lo aplico yo con mis agentes
+
+En este mismo repositorio trabajan tres agentes de IA: Claude, Hermes y Eagle.
+Las reglas que les pongo, lo que les permito y lo que no, están escritas en
+[`AGENTS.md`](../../AGENTS.md): qué nunca pueden publicar, cómo proponen cambios y
+quién aprueba. Y detrás de las reglas hay una barrera técnica: la rama principal
+está protegida y nada entra sin mi aprobación.
+
+Es *Human-in-the-Loop* de verdad, no de discurso: la IA propone, la persona decide.
+Úsalo como modelo para escribir las reglas de tus propios asistentes.
