@@ -23,6 +23,16 @@ Este repositorio es **PÚBLICO**. Todo lo que entra aquí lo puede ver cualquier
 6. Las apps son HTML autocontenido (sin CDN, sin claves); la lógica sensible vive
    en n8n, fuera de aquí.
 
+## Qué más puede entrar aquí
+Además de las apps y el material de cada clase, este repositorio irá recogiendo
+otros elementos que cumplan el propósito de las clases y el objetivo del buen y
+correcto uso de la Inteligencia Artificial: procesos de automatización (flujos de
+n8n exportados y limpios de credenciales), plantillas de prompts, configuraciones
+de asistentes y otras herramientas que permitan reproducir lo que se enseña.
+La regla es la misma para todo: se publica lo que ya está probado y no lleva nada
+privado; un flujo de n8n se exporta sin credenciales ni URLs internas, y se
+documenta qué hace y qué hay que rellenar para usarlo.
+
 ## Licencias
 - Código de las apps: MIT (`LICENSE-codigo.md`).
 - Plantillas y material: CC BY-NC 4.0 (`LICENSE-material.md`).

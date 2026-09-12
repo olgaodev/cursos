@@ -48,6 +48,14 @@ con **Ada**, la asistente del curso, desde [olgadev.com](https://olgadev.com).
 Este repositorio es el respaldo público y técnico de esa entrega, no la
 sustituye.
 
+
+## Qué encontrarás aquí con el tiempo
+
+No solo apps y plantillas: también procesos de automatización (flujos de n8n),
+plantillas de prompts, configuraciones de asistentes y otras herramientas que
+usamos en las clases, siempre con el mismo criterio: que sirvan para hacer las
+cosas bien con Inteligencia Artificial, con criterio y con la persona al mando.
+
 ## Licencias
 
 - El **código** de las apps (`app/`, ficheros `.html` de demo) se publica
