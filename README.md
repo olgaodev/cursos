@@ -72,6 +72,14 @@ plantillas de prompts, configuraciones de asistentes y otras herramientas que
 usamos en las clases, siempre con el mismo criterio: que sirvan para hacer las
 cosas bien con Inteligencia Artificial, con criterio y con la persona al mando.
 
+
+## Dónde encontrarme
+
+En todas las redes soy **@olgaodev** («olgadev» no estaba libre; el dominio sí):
+[YouTube](https://www.youtube.com/@olgaodev) · [Instagram](https://www.instagram.com/olgaodev) ·
+[TikTok](https://www.tiktok.com/@olgaodev) · [Facebook](https://www.facebook.com/profile.php?id=61591893658265) ·
+[LinkedIn](https://www.linkedin.com/in/olgaangelicaortizrevelo) · [olgadev.com](https://olgadev.com)
+
 ## Licencias
 
 - El **código** de las apps (`app/`, ficheros `.html` de demo) se publica
