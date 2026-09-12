@@ -4,6 +4,22 @@ Este repositorio guarda el material público del curso **«IA y creación de
 aplicaciones para emprendedores y autónomos»**, de **Olga Angélica Ortiz**
 (marca [OlgaDev.com](https://olgadev.com)).
 
+## Manifiesto: así trabajamos con Inteligencia Artificial en OlgaDev
+
+1. **La persona al mando.** La IA propone, ejecuta y acelera; decide una persona.
+   Nada llega a producción, ni a este repositorio, sin una aprobación humana.
+2. **Privacidad por diseño.** Ningún dato personal viaja a un modelo de IA sin
+   necesidad; los nombres y correos se quedan en nuestros servidores. Lo que no
+   hace falta guardar, no se guarda.
+3. **Dentro de la ley.** Reglamento europeo de IA y protección de datos no son
+   un trámite: son el marco. Consentimiento claro, finalidad concreta, baja en
+   un clic.
+4. **Construir en público.** Enseñamos con nuestro trabajo real, no con humo:
+   lo que ves aquí es lo que usamos. Lo que aún no está probado, no se publica.
+5. **Herramientas, no magia.** Asistentes, automatizaciones y agentes se usan
+   donde aportan, con reglas escritas de lo que pueden y no pueden hacer
+   (`AGENTS.md`), y con criterio profesional por delante.
+
 ## Para quién es esto
 
 Para cualquier persona del curso, o cualquier curiosa que llegue desde
@@ -47,6 +63,14 @@ El material vivo (PDFs por clase, plantillas, diplomas) se entrega hablando
 con **Ada**, la asistente del curso, desde [olgadev.com](https://olgadev.com).
 Este repositorio es el respaldo público y técnico de esa entrega, no la
 sustituye.
+
+
+## Qué encontrarás aquí con el tiempo
+
+No solo apps y plantillas: también procesos de automatización (flujos de n8n),
+plantillas de prompts, configuraciones de asistentes y otras herramientas que
+usamos en las clases, siempre con el mismo criterio: que sirvan para hacer las
+cosas bien con Inteligencia Artificial, con criterio y con la persona al mando.
 
 ## Licencias
 
